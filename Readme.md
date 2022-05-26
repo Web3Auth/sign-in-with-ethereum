@@ -5,10 +5,6 @@ The primary purpose of this document is to define how Ethereum accounts authenti
 
 While decentralized identity is not a novel concept, the most common implementations of blockchain-based credentials are either certificate-based or rely on centralized providers. We're proposing an alternative that doesn't require a trusted third party.
 
-### Assumptions 
-
-Currently, there is no propsed standard for signing messages on Ethereum. We are proposing `SIP-99` as a placeholder to conform to CAIP-74. 
-
 ### Specification
 The specification for Sign In With Ethereum is based on https://eips.ethereum.org/EIPS/eip-4361 with the intention to make it compatible with https://github.com/ChainAgnostic/CAIPs/blob/master/CAIPs/caip-74.md
 
@@ -114,7 +110,7 @@ Issued At: 2022-04-25T14:51:12.040Z
 Each field specified in the Specification section needs to follow the following regex rules
 ```js
 DOMAIN = "(?<domain>([^?#]*)) wants you to sign in with your Ethereum account:";
-ADDRESS = "\\n(?<address>[a-zA-Z0-9]{32,44})\\n\\n";
+const ADDRESS = "\\n(?<address>0x[a-zA-Z0-9]{40})\\n\\n";
 STATEMENT = "((?<statement>[^\\n]+)\\n)?";
 URI = "(([^:?#]+):)?(([^?#]*))?([^?#]*)(\\?([^#]*))?(#(.*))";
 URI_LINE = `\\nURI: (?<uri>${URI}?)`;
