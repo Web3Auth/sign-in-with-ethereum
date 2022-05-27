@@ -5,7 +5,7 @@ import * as uri from "valid-url";
 import { ParsedMessage } from "./regex";
 import { ErrorTypes, Header, Payload, Signature, SignInWithEthereumError, SignInWithEthereumResponse, VerifyParams } from "./types";
 
-export class SIWE {
+export class SIWEthereum {
   header: Header;
 
   payload: Payload;
@@ -16,9 +16,9 @@ export class SIWE {
    * Creates a parsed Sign-In with Ethereum Message object from a
    * string or an object. If a string is used an parser is called to
    * validate the parameter, otherwise the fields are attributed.
-   * @param param {string | SIWE} Sign message as a string or an object.
+   * @param param {string | SIWEthereum} Sign message as a string or an object.
    */
-  constructor(param: string | Partial<SIWE>) {
+  constructor(param: string | Partial<SIWEthereum>) {
     if (typeof param === "string") {
       const parsedMessage = new ParsedMessage(param);
       this.payload = {

@@ -1,4 +1,4 @@
-import { SIWE } from "./client";
+import { SIWEthereum } from "./client";
 
 export class SignatureMeta {}
 
@@ -138,5 +138,5 @@ export interface SignInWithEthereumResponse {
   error?: SignInWithEthereumError;
 
   /** Original message that was verified. */
-  data: SIWE;
+  data: SIWEthereum;
 }
