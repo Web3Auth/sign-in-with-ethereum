@@ -15,15 +15,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/torusresearch/sign-in-with-ethereum.git"
+    "url": "git+https://github.com/web3auth/sign-in-with-ethereum.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/torusresearch/sign-in-with-ethereum/issues"
+    "url": "https://github.com/web3auth/sign-in-with-ethereum/issues"
   },
-  "homepage": "https://github.com/torusresearch/sign-in-with-ethereum#readme",
+  "homepage": "https://github.com/web3auth/sign-in-with-ethereum#readme",
   "dependencies": {
     "@stablelib/random": "^1.0.1",
     "babel-loader": "^8.2.5",
