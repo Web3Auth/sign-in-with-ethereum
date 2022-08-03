@@ -236,13 +236,13 @@ export class SIWEthereum {
       const message = this.prepareMessage();
 
       /** Recover address from signature */
-      let addr;
+      let addr = "";
       try {
         addr = utils.verifyMessage(message, signature.s);
       } catch (_) {
       } finally {
         /** Match signature with message's address */
-        if (addr !== this.payload.address) {
+        if (addr.toLowerCase() !== this.payload.address.toLowerCase()) {
           resolve({
             success: false,
             data: this,
