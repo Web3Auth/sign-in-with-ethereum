@@ -1,9 +1,8 @@
-import { randomStringForEntropy } from "@stablelib/random";
-import { utils } from "ethers";
-import * as uri from "valid-url";
+import { verifyMessage } from "ethers";
 
 import { ParsedMessage } from "./regex";
 import { ErrorTypes, Header, Payload, Signature, SignInWithEthereumError, SignInWithEthereumResponse, VerifyParams } from "./types";
+import { isValidUrl, randomBytes } from "./util";
 
 export class SIWEthereum {
   header: Header;
@@ -41,7 +40,7 @@ export class SIWEthereum {
         this.payload.chainId = parseInt(this.payload.chainId);
       }
       if (!this.payload.nonce) {
-        this.payload.nonce = randomStringForEntropy(96);
+        this.payload.nonce = Buffer.from(randomBytes(96)).toString("hex");
       }
     }
   }
@@ -63,7 +62,7 @@ export class SIWEthereum {
     const uriField = `URI: ${this.payload.uri}`;
     let prefix = [header, this.payload.address].join("\n");
     const versionField = `Version: ${this.payload.version}`;
-    const chainField = `Chain ID: ${this.payload.chainId}` || "1";
+    const chainField = `Chain ID: ${this.payload.chainId}`;
     const nonceField = `Nonce: ${this.payload.nonce}`;
     const suffixArray = [uriField, versionField, chainField, nonceField];
     if (this.payload.issuedAt) {
@@ -130,7 +129,7 @@ export class SIWEthereum {
     }
 
     /** Check if the URI is valid. */
-    if (!uri.isUri(this.payload.uri)) {
+    if (!isValidUrl(this.payload.uri)) {
       throw new SignInWithEthereumError(ErrorTypes.INVALID_URI, `${this.payload.uri} to be a valid uri.`);
     }
 
@@ -238,7 +237,7 @@ export class SIWEthereum {
       /** Recover address from signature */
       let addr = "";
       try {
-        addr = utils.verifyMessage(message, signature.s);
+        addr = verifyMessage(message, signature.s);
       } catch (_) {
       } finally {
         /** Match signature with message's address */
