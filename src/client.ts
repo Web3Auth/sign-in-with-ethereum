@@ -63,7 +63,7 @@ export class SIWEthereum {
     const uriField = `URI: ${this.payload.uri}`;
     let prefix = [header, this.payload.address].join("\n");
     const versionField = `Version: ${this.payload.version}`;
-    const chainField = `Chain ID: ${this.payload.chainId}`;
+    const chainField = `Chain ID: ${this.payload.chainId || "1"}`;
     const nonceField = `Nonce: ${this.payload.nonce}`;
     const suffixArray = [uriField, versionField, chainField, nonceField];
     if (this.payload.issuedAt) {
