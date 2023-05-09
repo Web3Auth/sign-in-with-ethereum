@@ -1,18 +1,9 @@
-import Register from "@babel/register";
-import fetch from "node-fetch";
+import register from "@babel/register";
 import path from "path";
-import { register } from "ts-node";
+import { register as tsRegister } from "ts-node";
+
+tsRegister({ project: path.resolve("tsconfig.json") });
 
 register({
-  project: path.resolve(".", "tsconfig.json"),
-  require: ["tsconfig-paths/register"],
-  transpileOnly: true,
-  compilerOptions: { module: "commonjs" },
-});
-
-Register({
   extensions: [".ts", ".js"],
-  rootMode: "upward",
 });
-
-globalThis.fetch = fetch;

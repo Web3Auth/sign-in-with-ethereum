@@ -1,8 +1,9 @@
 import { verifyMessage } from "ethers";
+import { isUri } from "valid-url";
 
 import { ParsedMessage } from "./regex";
 import { ErrorTypes, Header, Payload, Signature, SignInWithEthereumError, SignInWithEthereumResponse, VerifyParams } from "./types";
-import { isValidUrl, randomBytes } from "./util";
+import { randomBytes } from "./util";
 
 export class SIWEthereum {
   header: Header;
@@ -40,7 +41,7 @@ export class SIWEthereum {
         this.payload.chainId = parseInt(this.payload.chainId);
       }
       if (!this.payload.nonce) {
-        this.payload.nonce = Buffer.from(randomBytes(96)).toString("hex");
+        this.payload.nonce = randomBytes(8).toString("hex");
       }
     }
   }
@@ -129,7 +130,7 @@ export class SIWEthereum {
     }
 
     /** Check if the URI is valid. */
-    if (!isValidUrl(this.payload.uri)) {
+    if (!isUri(this.payload.uri)) {
       throw new SignInWithEthereumError(ErrorTypes.INVALID_URI, `${this.payload.uri} to be a valid uri.`);
     }
 
