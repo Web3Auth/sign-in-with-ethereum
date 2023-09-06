@@ -16,7 +16,7 @@ export class SIWEthereum {
    * Creates a parsed Sign-In with Ethereum Message object from a
    * string or an object. If a string is used an parser is called to
    * validate the parameter, otherwise the fields are attributed.
-   * @param param {string | SIWEthereum} Sign message as a string or an object.
+   * @param param - Sign message as a string or an object.
    */
   constructor(param: string | Partial<SIWEthereum>) {
     if (typeof param === "string") {
@@ -52,7 +52,7 @@ export class SIWEthereum {
    * [prepareMessage()] instead which will resolve to the correct method based
    * on the [type] attribute of this object, in case of other formats being
    * implemented.
-   * @returns {string} message
+   * @returns - message
    */
   toMessage(): string {
     /** Validates all fields of the object */
@@ -100,7 +100,7 @@ export class SIWEthereum {
   /**
    * This method parses all the fields in the object and creates a sign
    * message according with the type defined.
-   * @returns {string} Returns a message ready to be signed according with the
+   * @returns - Returns a message ready to be signed according with the
    * type defined in the object.
    */
   prepareMessage(): string {
@@ -121,7 +121,7 @@ export class SIWEthereum {
 
   /**
    * Validates the value of this object fields.
-   * @throws Throws an {ErrorType} if a field is invalid.
+   * @throws Throws an if a field is invalid.
    */
   validate() {
     /** `domain` check. */
@@ -171,8 +171,8 @@ export class SIWEthereum {
 
   /**
    * Validates the integrity of the object by matching it's signature.
-   * @param params Parameters to verify the integrity of the message, signature is required.
-   * @returns {Promise<SignInWithEthereumResponse>} This object if valid.
+   * @param params - Parameters to verify the integrity of the message, signature is required.
+   * @returns This object if valid.
    */
   async verify(params: VerifyParams): Promise<SignInWithEthereumResponse> {
     return new Promise<SignInWithEthereumResponse>((resolve) => {
