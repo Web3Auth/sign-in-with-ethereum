@@ -45,8 +45,8 @@ describe(`Message Validation`, function () {
         const msg = new SIWEthereum({ payload });
         const error = await msg.verify({ payload, signature });
         assert(Object.values(ErrorTypes).includes(error.error.type));
-      } catch (error) {
-        assert.ok(Object.values(ErrorTypes).includes(error.message));
+      } catch (error: unknown) {
+        assert.ok((Object.values(ErrorTypes) as string[]).includes((error as Error).message));
       }
     });
   });
