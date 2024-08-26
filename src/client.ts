@@ -1,6 +1,6 @@
 import { verifyMessage } from "@ambire/signature-validator";
 import { SUPPORTED_NETWORKS } from "@toruslabs/ethereum-controllers";
-import { ethers } from "ethers";
+import { providers, utils } from "ethers";
 import { isUri } from "valid-url";
 
 import { ParsedMessage } from "./regex";
@@ -238,13 +238,20 @@ export class SIWEthereum {
 
     /** Recover address from signature */
     try {
+      const recoveredAddress = utils.verifyMessage(message, signature.s);
+      if (recoveredAddress.toLowerCase() === this.payload.address.toLowerCase()) {
+        return {
+          success: true,
+          data: this,
+        };
+      }
       const { rpcTarget, displayName } = SUPPORTED_NETWORKS[`0x${this.payload.chainId.toString(16)}`];
       if (!rpcTarget) {
         throw new Error("Unsupported chainId");
       }
       const infuraKey = process.env.VITE_APP_INFURA_PROJECT_KEY;
       const finalRpcTarget = rpcTarget.replace("VITE_APP_INFURA_PROJECT_KEY", infuraKey);
-      const provider = new ethers.providers.JsonRpcProvider(finalRpcTarget, { chainId: this.payload.chainId, name: displayName });
+      const provider = new providers.JsonRpcProvider(finalRpcTarget, { chainId: this.payload.chainId, name: displayName });
       const isValid = await verifyMessage({ signature: signature.s, message, signer: this.payload.address, provider });
       if (!isValid) {
         return {
