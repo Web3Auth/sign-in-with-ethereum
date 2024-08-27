@@ -4,6 +4,7 @@ import assert from "assert";
 import { Wallet } from "ethers";
 
 import { ErrorTypes, Signature, SIWEthereum } from "../src/index";
+// import parsing1271 from "./parsing_1271.json";
 import parsingPositive from "./parsing_positive.json";
 import validationNegative from "./validation_negative.json";
 import validationPositive from "./validation_positive.json";
@@ -64,7 +65,18 @@ describe(`Round Trip`, function () {
       signature.s = await wallet.signMessage(msg.toMessage());
       signature.t = "eip191";
       const success = await msg.verify({ signature, payload });
-      assert.ok(success);
+      assert.ok(success.success);
     });
   });
 });
+
+// describe(`Round Trip 1271`, function () {
+//   Object.entries(parsing1271).forEach(([test, el]) => {
+//     it(`Generates a Successfully Verifying message: ${test}`, async function () {
+//       const { payload, signature } = el.fields;
+//       const msg = new SIWEthereum({ payload });
+//       const success = await msg.verify({ signature, payload });
+//       assert.ok(success.success);
+//     });
+//   });
+// });
