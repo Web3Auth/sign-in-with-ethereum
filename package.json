@@ -29,9 +29,8 @@
   },
   "homepage": "https://github.com/web3auth/sign-in-with-ethereum#readme",
   "dependencies": {
-    "@ambire/signature-validator": "^1.3.1",
     "@toruslabs/ethereum-controllers": "^6.0.2",
-    "ethers": "^5",
+    "ethers": "^6.13.2",
     "valid-url": "^1.0.9"
   },
   "devDependencies": {
