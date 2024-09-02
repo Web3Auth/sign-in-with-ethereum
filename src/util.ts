@@ -8,3 +8,10 @@ export function randomBytes(size: number): Buffer {
 
   return Buffer.from(arr);
 }
+
+export const createInfuraUrl = (url: string, projectId: string): string => {
+  // split url by / and then replace last index with projectId and then join all the parts with /
+  const parts = url.split("/");
+  parts[parts.length - 1] = projectId;
+  return parts.join("/");
+};

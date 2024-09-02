@@ -12,7 +12,8 @@
     "build": "torus-scripts build",
     "release": "torus-scripts release",
     "lint": "eslint --fix 'src/**/*.ts'",
-    "test": "mocha"
+    "test": "mocha",
+    "prepack": "npm run build"
   },
   "files": [
     "dist"
