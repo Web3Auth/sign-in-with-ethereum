@@ -1,6 +1,6 @@
 {
   "name": "@web3auth/sign-in-with-ethereum",
-  "version": "4.2.1",
+  "version": "4.2.2",
   "description": "",
   "main": "dist/lib.cjs/index.js",
   "module": "dist/lib.esm/index.js",
