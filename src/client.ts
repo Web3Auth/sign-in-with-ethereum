@@ -81,7 +81,7 @@ export class SIWEthereum extends SIWEthereumBase {
           data: this,
         };
       }
-    } catch (error: unknown) {
+    } catch {
       // fallback method to check if its 1271 or 6492 signature.
       try {
         const { rpcTarget, displayName } = SUPPORTED_NETWORKS[`0x${this.payload.chainId.toString(16)}`];
@@ -106,7 +106,9 @@ export class SIWEthereum extends SIWEthereumBase {
           success: true,
           data: this,
         };
-      } catch {}
+      } catch {
+        // do nothing
+      }
 
       return {
         success: false,
