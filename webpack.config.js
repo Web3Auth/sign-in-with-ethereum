@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-require-imports */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const path = require("path");
 const { EnvironmentPlugin } = require("webpack");
 
