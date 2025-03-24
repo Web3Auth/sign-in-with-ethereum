@@ -13,10 +13,10 @@ jobs:
 
     steps:
       - name: Check out Git repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node }}
           cache: "npm"
@@ -29,9 +29,13 @@ jobs:
 
       - name: Build
         run: npm run build
+        env:
+          VITE_APP_INFURA_PROJECT_KEY: ${{ secrets.VITE_APP_INFURA_PROJECT_KEY }}
 
       - name: Install playwright webkit
         run: npx playwright install-deps webkit
 
       - name: Test
         run: npx playwright install && npm run test
+        env:
+          VITE_APP_INFURA_PROJECT_KEY: ${{ secrets.VITE_APP_INFURA_PROJECT_KEY }}
