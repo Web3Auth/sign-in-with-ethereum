@@ -1,7 +1,5 @@
-/* eslint-disable mocha/max-top-level-suites */
-/* eslint-disable mocha/no-setup-in-describe */
-import assert from "assert";
 import { Wallet } from "ethers";
+import { describe, expect, it } from "vitest";
 
 import { ErrorTypes, Signature, SIWEthereum } from "../src/index";
 // import parsing1271 from "./parsing_1271.json";
@@ -9,55 +7,55 @@ import parsingPositive from "./parsing_positive.json";
 import validationNegative from "./validation_negative.json";
 import validationPositive from "./validation_positive.json";
 
-describe(`Message Generation from payload`, function () {
+describe(`Message Generation from payload`, () => {
   Object.entries(parsingPositive).forEach(([test, value]) => {
-    it(`Generates message successfully: ${test}`, function () {
+    it(`Generates message successfully: ${test}`, () => {
       const { payload } = value.fields;
       const msg = new SIWEthereum({ payload });
-      assert.equal(msg.toMessage(), value.message);
+      expect(msg.toMessage()).toBe(value.message);
     });
   });
 });
 
-describe(`Message Generation from message`, function () {
+describe(`Message Generation from message`, () => {
   Object.entries(parsingPositive).forEach(([test, value]) => {
-    it(`Generates message successfully: ${test}`, function () {
+    it(`Generates message successfully: ${test}`, () => {
       const msg = new SIWEthereum(value.message);
-      assert.equal(msg.toMessage(), value.message);
+      expect(msg.toMessage()).toBe(value.message);
     });
   });
 });
 
-describe(`Message Validation`, function () {
+describe(`Message Validation`, () => {
   Object.entries(validationPositive).forEach(([test, value]) => {
-    it(`Validates message successfully: ${test}`, async function () {
+    it(`Validates message successfully: ${test}`, async () => {
       const { payload } = value;
       const { signature } = value;
       const msg = new SIWEthereum({ payload });
-      await assert.doesNotReject(msg.verify({ payload, signature }));
+      await expect(msg.verify({ payload, signature })).resolves.toBeDefined();
     });
   });
 
   Object.entries(validationNegative).forEach(([test, value]) => {
-    it(`Fails to verify message: ${test}`, async function () {
+    it(`Fails to verify message: ${test}`, async () => {
       try {
         const { payload } = value;
         const { signature } = value;
         const msg = new SIWEthereum({ payload });
         const error = await msg.verify({ payload, signature });
-        assert(Object.values(ErrorTypes).includes(error.error.type));
+        expect(Object.values(ErrorTypes)).toContain(error.error.type);
       } catch (error: unknown) {
-        assert.ok((Object.values(ErrorTypes) as string[]).includes((error as Error).message));
+        expect(Object.values(ErrorTypes) as string[]).toContain((error as Error).message);
       }
     });
   });
 });
 
-describe(`Round Trip`, function () {
+describe(`Round Trip`, () => {
   const wallet = Wallet.createRandom();
 
   Object.entries(parsingPositive).forEach(([test, el]) => {
-    it(`Generates a Successfully Verifying message: ${test}`, async function () {
+    it(`Generates a Successfully Verifying message: ${test}`, async () => {
       const { payload } = el.fields;
       payload.address = wallet.address;
       const msg = new SIWEthereum({ payload });
@@ -65,18 +63,20 @@ describe(`Round Trip`, function () {
       signature.s = await wallet.signMessage(msg.toMessage());
       signature.t = "eip191";
       const success = await msg.verify({ signature, payload });
-      assert.ok(success.success);
+      expect(success.success).toBe(true);
     });
   });
 });
 
-// describe(`Round Trip 1271`, function () {
-//   Object.entries(parsing1271).forEach(([test, el]) => {
-//     it(`Generates a Successfully Verifying message: ${test}`, async function () {
+// eslint-disable-next-line vitest/no-commented-out-tests
+// describe(`Round Trip 1271`, () => {
+//   Object.entries(parsing1271).forEach(([testName, el]) => {
+// eslint-disable-next-line vitest/no-commented-out-tests
+//     test.skip(`Generates a Successfully Verifying message: ${testName}`, async () => {
 //       const { payload, signature } = el.fields;
 //       const msg = new SIWEthereum({ payload });
 //       const success = await msg.verify({ signature, payload });
-//       assert.ok(success.success);
+//       expect(success.success).toBe(true);
 //     });
 //   });
 // });
