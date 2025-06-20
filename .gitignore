@@ -27,5 +27,5 @@ secrets.json
 toruslabs-ethereum-embed*
 
 .parcel-cache
-react-app/dist
+vite-react-demo/dist
 .env

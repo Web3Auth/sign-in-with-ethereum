@@ -1,21 +1,29 @@
 import { Header, Payload, SIWEthereum } from "@web3auth/sign-in-with-ethereum";
 import React, { useState } from "react";
 import Swal from "sweetalert2";
-import Web3 from "web3";
-import EthereumLogo from "../public/ethereum-logo.png";
+import { ethers } from "ethers";
+import EthereumLogo from "./assets/ethereum-eth-logo.svg";
+
+// Extend Window interface to include ethereum and web3
+declare global {
+  interface Window {
+    ethereum?: any;
+    web3?: any;
+  }
+}
 
 const MyWallet: React.FC = () => {
   // Domain and origin
   const domain = window.location.host;
   const origin = window.location.origin;
 
-  let statement = "Sign in with Ethereum to the app.";
+  const statement = "Sign in with Ethereum to the app.";
 
-  const [siwsMessage, setSiwsMessage] = useState<SIWEthereum | null>();
+  const [siwsMessage, setSiwsMessage] = useState<SIWEthereum | null>(null);
   const [nonce, setNonce] = useState("");
   const [sign, setSignature] = useState("");
   const [publicKey, setPublicKey] = useState("");
-  const [currentProvider, setProvider] = useState<any>();
+  const [currentProvider, setProvider] = useState<ethers.BrowserProvider | null>(null);
 
   const detectCurrentProvider = () => {
     let provider;
@@ -31,28 +39,39 @@ const MyWallet: React.FC = () => {
 
   async function connectWallet() {
     try {
-      setProvider(detectCurrentProvider());
-      if (currentProvider) {
-        if (currentProvider !== window.ethereum) {
+      const detectedProvider = detectCurrentProvider();
+      if (detectedProvider) {
+        if (detectedProvider !== window.ethereum) {
           Swal.fire("Non-Ethereum browser detected. You should consider trying MetaMask!");
         }
-        await currentProvider.request({ method: "eth_requestAccounts" });
-        const web3 = new Web3(currentProvider);
-        const userAccount = await web3.eth.getAccounts();
-        if (userAccount.length === 0) {
-          console.log("Please connect to meta mask");
+
+        // Create ethers provider
+        const ethersProvider = new ethers.BrowserProvider(detectedProvider);
+        setProvider(ethersProvider);
+
+        // Request accounts
+        await detectedProvider.request({ method: "eth_requestAccounts" });
+
+        // Get signer and address
+        const signer = await ethersProvider.getSigner();
+        const address = await signer.getAddress();
+
+        if (address) {
+          setPublicKey(address);
         } else {
-          setPublicKey(userAccount[0]);
+          console.log("Please connect to meta mask");
         }
       }
     } catch (err) {
-      console.log("There was an error fetching your accounts. Make sure your Ethereum client is configured correctly.");
+      console.log(`There was an error fetching your accounts. Make sure your Ethereum client is configured correctly. ${err}`);
     }
   }
 
   // Generate a message for signing
   // The nonce is generated on the server side
-  function createEthereumMessage() {
+  async function createEthereumMessage() {
+    if (!currentProvider) return;
+
     const payload = new Payload();
     payload.domain = domain;
     payload.address = publicKey;
@@ -62,20 +81,20 @@ const MyWallet: React.FC = () => {
     payload.chainId = 1;
     const header = new Header();
     header.t = "eip191";
-    let message = new SIWEthereum({ header, payload });
+    const message = new SIWEthereum({ header, payload });
+
     // we need the nonce for verification so getting it in a global variable
     setNonce(message.payload.nonce);
     setSiwsMessage(message);
     const messageText = message.prepareMessage();
-    const web3 = new Web3(currentProvider);
 
-    web3.eth.personal.sign(messageText, publicKey, "", (err, result) => {
-      if (err) {
-        console.log(err);
-      } else {
-        setSignature(result);
-      }
-    });
+    try {
+      const signer = await currentProvider.getSigner();
+      const signature = await signer.signMessage(messageText);
+      setSignature(signature);
+    } catch (err) {
+      console.log("Error signing message:", err);
+    }
   }
 
   return (
@@ -83,7 +102,7 @@ const MyWallet: React.FC = () => {
       {publicKey != "" && sign == "" && (
         <span>
           <p className="center">Sign Transaction</p>
-          <input className="publicKey" type="text" id="publicKey" value={publicKey} />
+          <input className="publicKey" type="text" id="publicKey" value={publicKey} onChange={(e) => setPublicKey(e.target.value)} />
           <button className="web3auth" id="w3aBtn" onClick={createEthereumMessage}>
             {" "}
             Sign In With Ethereum
@@ -93,12 +112,12 @@ const MyWallet: React.FC = () => {
       {publicKey == "" && sign == "" && (
         <div>
           <div className="logo-wrapper">
-            <img className="ethereum-logo" src={EthereumLogo} />
+            <img className="ethereum-logo" src={EthereumLogo} alt="Ethereum Logo" style={{ width: "100px", height: "auto" }} />
           </div>
           <p className="sign">Sign in With Ethereum</p>
           <button className="web3auth" id="w3aBtn" onClick={connectWallet}>
             {" "}
-            Conect Wallet
+            Connect Wallet
           </button>
         </div>
       )}
@@ -110,13 +129,15 @@ const MyWallet: React.FC = () => {
           <button
             className="web3auth"
             id="verify"
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
             onClick={(e) => {
               const signature = {
                 t: "sip99",
                 s: sign,
               };
               const payload = siwsMessage!.payload;
-              siwsMessage!.verify({ payload, signature }).then((resp) => {
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              siwsMessage!.verify({ payload, signature }).then((resp: any) => {
                 if (resp.success == true) {
                   Swal.fire("Success", "Signature Verified", "success");
                 } else {
@@ -130,6 +151,7 @@ const MyWallet: React.FC = () => {
           <button
             className="web3auth"
             id="verify"
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
             onClick={(e) => {
               setSiwsMessage(null);
               setNonce("");
